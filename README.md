@@ -2,7 +2,7 @@
 
 
 ## Installation:
-Copy repo, go to the folder and run ```pip install .```
+Clone repo, go to the folder and run ```pip install .```
 
 ## Usage:
 - Ask LLM to create a presentation on some topic (or paper / any text you've added to the context of the model you use) with some kind of a following command:\
