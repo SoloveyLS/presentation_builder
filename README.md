@@ -1,4 +1,4 @@
-# Simple presentation parser from JSON
+# Simple presentation parser from JSON (for creating presentations with LLM)
 
 
 ## Installation:
