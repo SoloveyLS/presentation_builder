@@ -1,5 +1,11 @@
 # Simple presentation parser from JSON (for creating presentations with LLM)
 
+## TODO:
+- [ ] Add image support
+- [ ] Create server / application
+- [ ] Add local LLM support
+- [ ] Add API access to LLM for on-a-flight presentation creation
+
 
 ## Installation:
 Clone repo, go to the folder and run ```pip install .```
