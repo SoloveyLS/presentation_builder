@@ -1,0 +1,22 @@
+
+{
+    "Slide 1" :
+    {
+        "title"     : "a couple of words",
+        "idea"      : "a couple of sentences",
+        "text"      : "some text to be shown at the slide - best are bullet lists, no big sheets of text at the slides",
+        "formulas"  : "some formulas to be shown at the slide - in LaTeX format (textbox with LaTeX code will be placed as a placeholder)",
+        "figures"   : "which figures from the paper (no more then one per slide as they are quite big) or what pictures (could be more if they are small) to show at the slide",
+        "speech"    : "what to say during this slide"
+    },
+
+    "Slide 2" :
+    {
+        "title"     : "a couple of words",
+        "idea"      : "a couple of sentences",
+        "text"      : "some text to be shown at the slide - best are bullet lists, no big sheets of text at the slides",
+        "formulas"  : "some formulas to be shown at the slide - in LaTeX format (textbox with LaTeX code will be placed as a placeholder)",
+        "figures"   : "which figures from the paper (no more then one per slide as they are quite big) or what pictures (could be more if they are small) to show at the slide",
+        "speech"    : "what to say during this slide"
+    }
+}

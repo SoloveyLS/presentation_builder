@@ -1,0 +1,28 @@
+{
+    "Slide 1": {
+        "title": "Sample Title 1",
+        "idea": "Sample Idea 1",
+        "text": [
+            "- bullet1",
+            "- bullet2"
+        ],
+        "formulas": "\\int_0^1 x^2 dx",
+        "figures": "Figure Description 1",
+        "speech": "Additional Notes 1"
+    },
+    "Slide 2": {
+        "title": "Sample Title 2",
+        "idea": "Sample Idea 2",
+        "text": [
+            "subtitle1:",
+            "\u2022 bullet1",
+            "\u2022 bullet2",
+            "subtitle2:",
+            "\u2022 bullet3",
+            "\u2022 bullet4"
+        ],
+        "formulas": "\\sum_{i=1}^n i = \\frac{n(n+1)}{2}",
+        "figures": "Figure Description 2",
+        "speech": "Additional Notes 2"
+    }
+}
