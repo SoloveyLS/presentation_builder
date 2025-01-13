@@ -1,10 +1,16 @@
 import json
+from os import PathLike
 from PIL import Image
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE, PP_ALIGN
 
-def create_presentation_from_json(json_file, output_pptx):
+def create_presentation_from_json(
+    json_file:PathLike, 
+    output_pptx:PathLike,
+    height:float=7.5,
+    width:float=13.333,
+):
     """
     Creates a PowerPoint presentation from a JSON file.
 
@@ -17,11 +23,8 @@ def create_presentation_from_json(json_file, output_pptx):
         data = json.load(f)
 
     prs = Presentation()
-    W = 13.333
-    H = 7.5
-    
-    prs.slide_width = Inches(W)
-    prs.slide_height = Inches(H)
+    prs.slide_width = Inches(width)
+    prs.slide_height = Inches(height)
 
     # Use a slide layout with a title and content placeholders
     # Choose a layout that best suits your needs
@@ -31,7 +34,7 @@ def create_presentation_from_json(json_file, output_pptx):
     for slide_key, slide_data in data.items():
         if slide_key.startswith("Slide"):
             slide = prs.slides.add_slide(slide_layout)
-            text_width = W / (2 if slide_data["figures"] else 1) - 1
+            text_width = width / (2 if slide_data["figures"] else 1) - 1
             
             # Title
             title = slide.shapes.title
@@ -39,7 +42,7 @@ def create_presentation_from_json(json_file, output_pptx):
             title.text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
 
             # Idea (smaller font underneath the title)
-            idea_textbox = slide.shapes.add_textbox(Inches(0.5), Inches(1.5), Inches(W - 1), Inches(0.5))
+            idea_textbox = slide.shapes.add_textbox(Inches(0.5), Inches(1.5), Inches(width - 1), Inches(0.5))
             idea_text_frame = idea_textbox.text_frame
             idea_text_frame.text = slide_data["idea"]
             idea_text_frame.paragraphs[0].font.size = Pt(18)  # Adjust font size as needed
@@ -78,9 +81,9 @@ def create_presentation_from_json(json_file, output_pptx):
                     y_offset += Inches(0.7)
 
             # Figures (placeholder image)
-            left = Inches(W / 2)
+            left = Inches(width / 2)
             top = Inches(2)
-            width = Inches(W / 2 - 1)
+            width = Inches(width / 2 - 1)
             height = Inches(4)
             # Add a placeholder picture. You can use a dummy image or a specific placeholder image
             # Replace 'path/to/placeholder.png' with an actual image file if you have one
