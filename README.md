@@ -1,7 +1,7 @@
 # Simple presentation parser from JSON (for creating presentations with LLM)
 
 ## TODO:
-- [ ] Add image support
+- [ ] Add image support (currently only black placeholders)
 - [ ] Create server / application
 - [ ] Add local LLM support
 - [ ] Add API access to LLM for on-a-flight presentation creation
