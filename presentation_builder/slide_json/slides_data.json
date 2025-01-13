@@ -6,7 +6,9 @@
             "- bullet1",
             "- bullet2"
         ],
-        "formulas": "\\int_0^1 x^2 dx",
+        "formulas": [
+            "\\int_0^1 x^2 dx"
+        ],
         "figures": "Figure Description 1",
         "speech": "Additional Notes 1"
     },
@@ -21,7 +23,9 @@
             "\u2022 bullet3",
             "\u2022 bullet4"
         ],
-        "formulas": "\\sum_{i=1}^n i = \\frac{n(n+1)}{2}",
+        "formulas": [
+            "\\sum_{i=1}^n i = \\frac{n(n+1)}{2}"
+        ],
         "figures": "Figure Description 2",
         "speech": "Additional Notes 2"
     }

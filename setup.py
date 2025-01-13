@@ -17,5 +17,6 @@ setup(
     install_requires=[
         "python-pptx",
         "pillow",
+        "matplotlib",
     ]
 )

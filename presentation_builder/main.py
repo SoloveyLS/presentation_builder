@@ -1,9 +1,11 @@
 import json
-from os import PathLike
+from os import PathLike, makedirs
+from os.path import dirname
 from PIL import Image
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE, PP_ALIGN
+from src.tools import add_latex_formulas_as_images
 
 def create_presentation_from_json(
     json_file:PathLike, 
@@ -18,7 +20,7 @@ def create_presentation_from_json(
         json_file: Path to the JSON file.
         output_pptx: Path to save the generated PowerPoint presentation.
     """
-
+    FONT_SIZE = 16
     with open(json_file, 'r') as f:
         data = json.load(f)
 
@@ -34,28 +36,42 @@ def create_presentation_from_json(
     for slide_key, slide_data in data.items():
         if slide_key.startswith("Slide"):
             slide = prs.slides.add_slide(slide_layout)
-            text_width = width / (2 if slide_data["figures"] else 1) - 1
+            text_width = width / (2 if slide_data["figures"] else 1) - 0.5
             
             # Title
             title = slide.shapes.title
             title.text = slide_data["title"]
             title.text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
+            title.text_frame.word_wrap = False
+            title.text_frame.paragraphs[0].font.name = "Arial"
+
+            # [print(f"{i} : {x}") for i, x in enumerate(dir(title.text_frame))]
 
             # Idea (smaller font underneath the title)
             idea_textbox = slide.shapes.add_textbox(Inches(0.5), Inches(1.5), Inches(width - 1), Inches(0.5))
             idea_text_frame = idea_textbox.text_frame
             idea_text_frame.text = slide_data["idea"]
-            idea_text_frame.paragraphs[0].font.size = Pt(18)  # Adjust font size as needed
-
+            idea_text_frame.paragraphs[0].font.size = Pt(FONT_SIZE)  # Adjust font size as needed
+            idea_text_frame.paragraphs[0].font.name = "Arial"
+            
             # Text (bullet list on the left half of the slide)
             text_textbox = slide.shapes.add_textbox(Inches(0.5), Inches(2), Inches(text_width), Inches(4))
             text_frame = text_textbox.text_frame
             text_frame.word_wrap = True # Enable word wrap
             text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
             text_frame.vertical_anchor = MSO_ANCHOR.TOP
+            text_frame.paragraphs[0].font.name = "Arial"
 
+            buf = ""
+            first = True
             for item in slide_data["text"]:
-                p = text_frame.add_paragraph()
+                if buf.startswith("• ") and not item.startswith("• "):
+                    text_frame.add_paragraph()
+                
+                p = text_frame.add_paragraph() if not first else text_frame.paragraphs[0]
+                p.font.name = "Arial"
+                p.font.size = Pt(FONT_SIZE)
+                
                 if item.startswith("• "):
                     p.text = item[2:]  # Remove the "• " prefix
                     p.level = 1
@@ -66,44 +82,46 @@ def create_presentation_from_json(
                     p.text = item
                     p.level = 0
                     p.font.bold = True
+                buf = item
+                first = False
                     
-            y_offset = Inches(2.5) + Inches(0.5) * len(slide_data["text"])
+                
+            y_offset = Inches(2.5) + Inches(0.4) * len(text_frame.paragraphs)
 
-            # Formulas (placeholder textboxes)
-            if slide_data["formulas"]:
-                # y_offset = Inches(5)
-                formula_textbox = slide.shapes.add_textbox(Inches(0.5), y_offset, Inches(text_width), Inches(0.5))
-                formula_text_frame = formula_textbox.text_frame
-                for it in slide_data["formulas"]:
-                    p = formula_text_frame.add_paragraph()
-                    p.text = f"Formula: {it}"
-                    p.font.size = Pt(14)
-                    y_offset += Inches(0.7)
+            add_latex_formulas_as_images(
+                slide=slide, 
+                slide_data=slide_data, 
+                y_offset=y_offset, 
+                text_width=text_width,
+            )
 
             # Figures (placeholder image)
-            left = Inches(width / 2)
-            top = Inches(2)
-            width = Inches(width / 2 - 1)
-            height = Inches(4)
+            figsize = {
+                "left" : Inches(width / 2),
+                "top" : Inches(2),
+                "width" : Inches(width / 2 - 1),
+                "height" : Inches(4),
+            }
+            
             # Add a placeholder picture. You can use a dummy image or a specific placeholder image
             # Replace 'path/to/placeholder.png' with an actual image file if you have one
             if slide_data["figures"]:
                 try:
-                    slide.shapes.add_picture('placeholder/placeholder.png', left, top, width, height)
+                    slide.shapes.add_picture('./placeholder/placeholder.png', figsize["left"], figsize["top"], figsize["width"], figsize["height"])
                 except FileNotFoundError:
                     print("Warning: Placeholder image not found. Using a text placeholder instead.")
-                    picture_placeholder = slide.shapes.add_textbox(left, top, width, height)
+                    picture_placeholder = slide.shapes.add_textbox(figsize["left"], figsize["top"], figsize["width"], figsize["height"])
                     picture_placeholder.text_frame.text = f"Figure: {slide_data['figures']}"
-                    picture_placeholder.text_frame.paragraphs[0].font.size = Pt(14)
+                    picture_placeholder.text_frame.paragraphs[0].font.size = Pt(FONT_SIZE)
 
             # Speech (notes)
             notes_slide = slide.notes_slide
             notes_slide.notes_text_frame.text = slide_data["speech"]
 
+    makedirs(dirname(output_pptx), exist_ok=True)
     prs.save(output_pptx)
 
 def generate_placeholder():
-    from os import makedirs
     ph = Image.new("RGB", (100, 100))
     makedirs("placeholder", exist_ok=True)    
     ph.save("placeholder/placeholder.png")
@@ -113,7 +131,7 @@ if __name__ == "__main__":
     p = ArgumentParser()
     p.add_argument("--test"     , type=bool  , default=0                                 , help="If not 0 - creates dummy JSON for the test" )
     p.add_argument("--json"     , type=str   , default="slide_json/slides_data.json"     , help="Path to JSON with slides data"              )
-    p.add_argument("--savepath" , type=str   , default="output/output_presentation.pptx" , help="Path for .PPTX to be saved"                 )
+    p.add_argument("--savepath" , type=str   , default="output/_output_presentation.pptx", help="Path for .PPTX to be saved"                 )
     args = p.parse_args()
     
     test = args.test
@@ -132,7 +150,7 @@ if __name__ == "__main__":
                     "- bullet1",
                     "- bullet2",
                 ],
-                "formulas": r"\int_0^1 x^2 dx",
+                "formulas": [r"\int_0^1 x^2 dx"],
                 "figures": "Figure Description 1",
                 "speech": "Additional Notes 1"
             },
@@ -147,7 +165,7 @@ if __name__ == "__main__":
                     "• bullet3",
                     "• bullet4",
                 ],
-                "formulas": r"\sum_{i=1}^n i = \frac{n(n+1)}{2}",
+                "formulas": [r"\sum_{i=1}^n i = \frac{n(n+1)}{2}"],
                 "figures": "Figure Description 2",
                 "speech": "Additional Notes 2"
             }
