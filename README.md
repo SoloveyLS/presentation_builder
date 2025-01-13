@@ -1,6 +1,7 @@
 # Simple presentation parser from JSON (for creating presentations with LLM)
 
 ## TODO:
+- [ ] LaTeX is supported with matplotlib, so... Dew it (facepalm)
 - [ ] Add image support (currently only black placeholders)
 - [ ] Create server / application
 - [ ] Add local LLM support
