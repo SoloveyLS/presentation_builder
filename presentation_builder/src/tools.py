@@ -7,7 +7,7 @@ from pptx.slide import Slide
 
 def add_latex_formulas_as_images(
     slide:Slide, 
-    slide_data:dict, 
+    formulas:list, 
     y_offset:Inches, 
     text_width:float,
     fonstize:int=16,
@@ -21,9 +21,9 @@ def add_latex_formulas_as_images(
         y_offset: The vertical offset from the top of the slide for the first formula.
         text_width: The width of the area for the formulas.
     """
-    if slide_data["formulas"]:
+    if formulas:
         matplotlib.rcParams["mathtext.fontset"] = "cm"
-        for formula in slide_data["formulas"]:
+        for formula in formulas:
             fig = plt.figure(constrained_layout=True)
             gs = GridSpec(1, 1, figure=fig) # getting rid of useless warnings
             
